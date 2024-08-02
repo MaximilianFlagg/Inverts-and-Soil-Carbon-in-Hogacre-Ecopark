@@ -1,0 +1,1074 @@
+#Differences in invertebrate biodiversity and soil carbon between small-scale habitats in Hogacre Common Ecopark, Oxford
+
+#Install necessary packages.
+{
+ #install.packages('tidyverse')
+ #install.packages('vegan')
+ #install.packages('car')
+ #install.packages('writexl')
+  
+library(tidyverse) #Package necessary for graph creation
+library(vegan) #Package necessary for NMDS analysis
+library(car) #Package necessary for Levene tests on data
+library(writexl) #Package allows us to easily export tables to xlsx.
+}
+
+#Clean up and organise data.
+{
+#setwd() #Set working directory
+  
+pitfalls <- read_csv('pitfalls.csv') %>% #Invertebrates dataset
+  select(-'9046', -'Juv', -'Notes') %>% #Remove unnecessary columns
+  rename(Plot = 'Block', Trap = 'Plot') %>% #Rename column headings
+  filter(!is.na(Abundance)) #Remove NA abundance data
+#view(pitfalls)
+
+carabids <- filter(pitfalls, Family == 'Carabidae', !is.na(Species))
+#view(carabids)
+}
+
+#INDIVIDUAL ABUNDANCE
+#First I want to get the abundance data for each plot and trap
+{
+Abundance_Table <- tibble(
+  Site = c("H", "H", "H", "H", "H",
+           "H", "H", "H", "H", "H",
+           "H", "H", "H", "H", "H",
+           "H", "H", "H", "H", "H",
+           "H", "H", "H", "H", "H",
+           "H", "H", "H", "H", "H",
+           "P", "P", "P", "P", "P",
+           "P", "P", "P", "P", "P",
+           "P", "P", "P", "P", "P",
+           "P", "P", "P", "P", "P"
+           ),
+  Plot = c("HW", "HW", "HW", "HW", "HW",
+           "HM", "HM", "HM", "HM", "HM",
+           "HO", "HO", "HO", "HO", "HO",
+           "HG", "HG", "HG", "HG", "HG",
+           "HH", "HH", "HH", "HH", "HH",
+           "HB", "HB", "HB", "HB", "HB",
+           "PN", "PN", "PN", "PN", "PN",
+           "PS", "PS", "PS", "PS", "PS",
+           "PE", "PE", "PE", "PE", "PE",
+           "PW", "PW", "PW", "PW", "PW"
+           ),
+  Trap = c("HWN", "HWS", "HWE", "HWW", "HWC",
+           "HMN", "HMS", "HME", "HMW", "HMC",
+           "HON", "HOS", "HOE", "HOW", "HOC",
+           "HGN", "HGS", "HGE", "HGW", "HGC",
+           "HHN", "HHS", "HHE", "HHW", "HHC",
+           "HBN", "HBS", "HBE", "HBW", "HBC",
+           "PNN", "PNS", "PNE", "PNW", "PNC",
+           "PSN", "PSS", "PSE", "PSW", "PSC",
+           "PEN", "PES", "PEE", "PEW", "PEC",
+           "PWN", "PWS", "PWE", "PWW", "PWC"
+           ),
+  Total_Abundance = c(
+    sum(filter(pitfalls, Plot == 'JHW', Trap == 'N')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHW', Trap == 'S')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHW', Trap == 'E')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHW', Trap == 'W')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHW', Trap == 'C')$Abundance),
+    
+    sum(filter(pitfalls, Plot == 'JHM', Trap == 'N')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHM', Trap == 'S')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHM', Trap == 'E')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHM', Trap == 'W')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHM', Trap == 'C')$Abundance),
+    
+    sum(filter(pitfalls, Plot == 'JHO', Trap == 'N')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHO', Trap == 'S')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHO', Trap == 'E')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHO', Trap == 'W')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHO', Trap == 'C')$Abundance),
+    
+    sum(filter(pitfalls, Plot == 'JHG', Trap == 'N')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHG', Trap == 'S')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHG', Trap == 'E')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHG', Trap == 'W')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHG', Trap == 'C')$Abundance),
+    
+    sum(filter(pitfalls, Plot == 'JHH', Trap == 'N')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHH', Trap == 'S')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHH', Trap == 'E')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHH', Trap == 'W')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHH', Trap == 'C')$Abundance),
+    
+    sum(filter(pitfalls, Plot == 'JHB', Trap == 'N')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHB', Trap == 'S')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHB', Trap == 'E')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHB', Trap == 'W')$Abundance),
+    sum(filter(pitfalls, Plot == 'JHB', Trap == 'C')$Abundance),
+    
+    sum(filter(pitfalls, Plot == 'JPN', Trap == 'N')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPN', Trap == 'S')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPN', Trap == 'E')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPN', Trap == 'W')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPN', Trap == 'C')$Abundance),
+    
+    sum(filter(pitfalls, Plot == 'JPS', Trap == 'N')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPS', Trap == 'S')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPS', Trap == 'E')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPS', Trap == 'W')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPS', Trap == 'C')$Abundance),
+    
+    sum(filter(pitfalls, Plot == 'JPE', Trap == 'N')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPE', Trap == 'S')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPE', Trap == 'E')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPE', Trap == 'W')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPE', Trap == 'C')$Abundance),
+    
+    sum(filter(pitfalls, Plot == 'JPW', Trap == 'N')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPW', Trap == 'S')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPW', Trap == 'E')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPW', Trap == 'W')$Abundance),
+    sum(filter(pitfalls, Plot == 'JPW', Trap == 'C')$Abundance)
+  ))
+
+#view(Abundance_Table)
+}
+
+#ABUNDANCE STATISTICAL TESTS AND LINEAR MODEL
+{
+#Test if invertebrate abundance is significantly different across plots
+
+#Test assumption of normality  
+ggplot(Abundance_Table, aes(x = Total_Abundance)) +
+  geom_histogram(bins = 10) + 
+  facet_wrap( ~ Plot, nrow = 2) #Most seem normal, but not all. I consider this enough.
+leveneTest(data = Abundance_Table, Total_Abundance ~ Plot, centre = mean) #Test assumption of equal variance
+# p = 0.97, exceeding 0.05 so data meets assumption.
+
+Invertebrate_Abundance_Model <- lm(Total_Abundance ~ Plot, Abundance_Table) #Create linear model
+#Summary of model, though significance between plots will be tested graphically by confidence intervals.
+summary(Invertebrate_Abundance_Model) #show model results, including anova.
+
+#Creating site-level linear model to assess significant difference.
+
+#Assess normality
+ggplot(Abundance_Table, aes(x = Total_Abundance)) +  
+  geom_histogram(bins = 10) + 
+  facet_wrap( ~ Site, nrow = 2) #Both sites seem approximately normal
+leveneTest(data = Abundance_Table, Total_Abundance ~ Site, centre = mean) #Test assumption of equal variance
+# p = 0.06, exceeding 0.05 so data meets assumption.
+
+#Run a linear model on the sites
+Site_Abundance_Model <- lm(Total_Abundance ~ Site, Abundance_Table)
+summary(Site_Abundance_Model)
+#(P = 0.0001, F = 17.3, df = 1 and 48)
+}
+
+#Find standard errors for abundance data
+{
+Abundance_SE <- Abundance_Table %>% #Find standard errors for each plot for abundance data
+  group_by(Plot) %>%
+  summarise(standev = sd(Total_Abundance)) %>% 
+  slice(6,4,5,2,3,1,8,9,7,10) %>% #Rearranges the tibble to match the order of other tables
+  mutate(standerror = c( #Adding standard errors using generated standevs.
+    (58.00603/sqrt(5)), #HW
+    (16.77200/sqrt(5)), #HM
+    (36.48972/sqrt(5)), #HO
+    (58.29494/sqrt(5)), #HG
+    (41.07676/sqrt(5)), #HH
+    (43.39585/sqrt(5)), #HB
+    (54.45457/sqrt(5)), #PN
+    (25.53037/sqrt(5)), #PS
+    (41.51265/sqrt(5)), #PE
+    (69.66707/sqrt(5))  #PW
+  ))
+#view(Abundance_SE)
+}
+
+#Adding means from the linear model and standerrors to the abundance table
+{
+  Abundance_Table <- mutate(Abundance_Table, 
+                            Mean = c((115.8+138),(115.8+138),(115.8+138),(115.8+138),(115.8+138), #HW
+                            (115.8+147.8),(115.8+147.8),(115.8+147.8),(115.8+147.8),(115.8+147.8), #HM
+                            (115.8+74.2), (115.8+74.2), (115.8+74.2), (115.8+74.2), (115.8+74.2), #HO 
+                            (115.8+120.8),(115.8+120.8),(115.8+120.8),(115.8+120.8),(115.8+120.8), #HG
+                            (115.8-21.2), (115.8-21.2), (115.8-21.2), (115.8-21.2), (115.8-21.2), #HH 
+                            115.8, 115.8, 115.8, 115.8, 115.8,                                    #HB
+                            (115.8-32.4), (115.8-32.4), (115.8-32.4), (115.8-32.4), (115.8-32.4), #PN 
+                            (115.8-43.2), (115.8-43.2), (115.8-43.2), (115.8-43.2), (115.8-43.2), #PS 
+                            (115.8+8.8), (115.8+8.8), (115.8+8.8), (115.8+8.8), (115.8+8.8),      #PE
+                            (115.8+34.2), (115.8+34.2), (115.8+34.2), (115.8+34.2), (115.8+34.2)  #PW
+  )) %>% #Adding standard errors from Abundance_SE
+    mutate(Standerror = c(25.941085, 25.941085, 25.941085, 25.941085, 25.941085, #HW 
+                          7.500666,  7.500666,  7.500666,  7.500666,  7.500666,  #HM
+                          16.318699, 16.318699, 16.318699, 16.318699, 16.318699, #HO
+                          26.070290, 26.070290, 26.070290, 26.070290, 26.070290,  #HG
+                          18.370086, 18.370086, 18.370086, 18.370086, 18.370086,  #HH
+                          19.407214, 19.407214, 19.407214, 19.407214, 19.407214,  #HB
+                          24.352824, 24.352824, 24.352824, 24.352824, 24.352824,  #PN
+                          11.417529, 11.417529, 11.417529, 11.417529, 11.417529,  #PS
+                          18.565021, 18.565021, 18.565021, 18.565021, 18.565021,  #PE
+                          31.156061, 31.156061, 31.156061, 31.156061, 31.156061  #PW
+    )) %>%
+    mutate(confint = Standerror*1.96) %>%
+    mutate(upper = Mean + confint) %>%
+    mutate(lower = Mean - confint)
+}
+
+#Create dot plot for abundance across plots
+{
+Plot_Abundance_Dplot <- ggplot(Abundance_Table, aes(x = Plot, y = Total_Abundance)) + 
+                        theme_bw() +
+                        geom_jitter(data = Abundance_Table,
+                                    width = 0.1, height = 0,
+                                    aes(x = Plot, y = Total_Abundance, color = Site)) +
+                        scale_colour_manual(values = c("H" = "orange", "P" = "deepskyblue")) +
+                        geom_errorbar(data = Abundance_Table, aes( #Plot error bars
+                          x = Plot,
+                          ymin = lower, 
+                          ymax = upper),
+                          width = 0.2) +
+                        labs(x = 'Plot', y = 'Trap Invertebrate Abundance') +
+                        scale_x_discrete(label = c("Brch", "Gras", "Hzl", "Mdw", "Ochd", "Wd",
+                                                   "PE", "PN", "PS", "PW")) +
+                        geom_point(data = Abundance_Table, #Show the placement of the means
+                                   aes(x = Plot, y = Mean),
+                                   size = 0.8)
+Plot_Abundance_Dplot
+}
+
+#Find standard errors for site abundance data
+{
+Abundance_SE_Sites <- Abundance_Table %>% #Find standard errors for each plot for abundance data
+  group_by(Site) %>%
+  summarise(standev = sd(Total_Abundance), mean_site = mean(Total_Abundance)) %>%
+  mutate(standerror = c( #Adding standard errors using generated standevs.
+  (78.55181/sqrt(6)), #H
+  (56.31796/sqrt(4)) #P
+  ))
+#view(Abundance_SE_Sites)
+  
+#Add these values to Abundance_Table
+Abundance_Table <- Abundance_Table %>%
+  mutate(site_mean = c(192.4, 192.4, 192.4, 192.4, 192.4, 
+                       192.4, 192.4, 192.4, 192.4, 192.4, 
+                       192.4, 192.4, 192.4, 192.4, 192.4, 
+                       192.4, 192.4, 192.4, 192.4, 192.4, 
+                       192.4, 192.4, 192.4, 192.4, 192.4, 
+                       192.4, 192.4, 192.4, 192.4, 192.4, 
+                       107.65, 107.65, 107.65, 107.65, 107.65, 
+                       107.65, 107.65, 107.65, 107.65, 107.65, 
+                       107.65, 107.65, 107.65, 107.65, 107.65, 
+                       107.65, 107.65, 107.65, 107.65, 107.65 
+                       )) %>%
+  mutate(site_standerror = c(32.06864, 32.06864, 32.06864, 32.06864, 32.06864,  
+                             32.06864, 32.06864, 32.06864, 32.06864, 32.06864, 
+                             32.06864, 32.06864, 32.06864, 32.06864, 32.06864, 
+                             32.06864, 32.06864, 32.06864, 32.06864, 32.06864, 
+                             32.06864, 32.06864, 32.06864, 32.06864, 32.06864, 
+                             32.06864, 32.06864, 32.06864, 32.06864, 32.06864, 
+                             28.15898, 28.15898, 28.15898, 28.15898, 28.15898,   
+                             28.15898, 28.15898, 28.15898, 28.15898, 28.15898,   
+                             28.15898, 28.15898, 28.15898, 28.15898, 28.15898,   
+                             28.15898, 28.15898, 28.15898, 28.15898, 28.15898  
+  )) %>%
+    mutate(site_confint = site_standerror*1.96) %>%
+    mutate(site_upper = site_mean + site_confint) %>%
+    mutate(site_lower = site_mean - site_confint)
+#view(Abundance_Table)
+}
+
+#Create dot plot for abundance across sites.
+{
+Site_Abundance_Dplot <- ggplot(Abundance_Table, aes(x = Site, y = Total_Abundance)) + 
+                        theme_bw() +
+                        geom_jitter(data = Abundance_Table,
+                                    width = 0.1, height = 0,
+                                    aes(x = Site, y = Total_Abundance, color = Site)) +
+                        scale_colour_manual(values = c("H" = "orange", "P" = "deepskyblue")) +
+                        geom_errorbar(data = Abundance_Table, aes( #Plot error bars
+                          x = Site,
+                          ymin = site_lower, 
+                          ymax = site_upper),
+                          width = 0.2) +
+                        labs(x = 'Site', y = 'Trap Invertebrate Abundance') +
+                        scale_x_discrete(label = c("Hogacre", "Pembroke")) +
+                        geom_point(data = Abundance_Table, #Show the placement of the means
+                                   aes(x = Site, y = site_mean),
+                                   size = 0.8)
+Site_Abundance_Dplot
+}
+
+#CARABID SPECIES RICHNESS
+
+#Carabid richness table
+{
+presence_carabids <- select(carabids, -Abundance) #Create a new dataset excluding abundances  
+
+Richness_Table_Carabids <- tibble(
+    Site = c("H", "H", "H", "H", "H",
+             "H", "H", "H", "H", "H",
+             "H", "H", "H", "H", "H",
+             "H", "H", "H", "H", "H",
+             "H", "H", "H", "H", "H",
+             "H", "H", "H", "H", "H",
+             "P", "P", "P", "P", "P",
+             "P", "P", "P", "P", "P",
+             "P", "P", "P", "P", "P",
+             "P", "P", "P", "P", "P"
+    ),
+    Plot = c("HW", "HW", "HW", "HW", "HW",
+             "HM", "HM", "HM", "HM", "HM",
+             "HO", "HO", "HO", "HO", "HO",
+             "HG", "HG", "HG", "HG", "HG",
+             "HH", "HH", "HH", "HH", "HH",
+             "HB", "HB", "HB", "HB", "HB",
+             "PN", "PN", "PN", "PN", "PN",
+             "PS", "PS", "PS", "PS", "PS",
+             "PE", "PE", "PE", "PE", "PE",
+             "PW", "PW", "PW", "PW", "PW"
+    ),
+    Trap = c("HWN", "HWS", "HWE", "HWW", "HWC",
+             "HMN", "HMS", "HME", "HMW", "HMC",
+             "HON", "HOS", "HOE", "HOW", "HOC",
+             "HGN", "HGS", "HGE", "HGW", "HGC",
+             "HHN", "HHS", "HHE", "HHW", "HHC",
+             "HBN", "HBS", "HBE", "HBW", "HBC",
+             "PNN", "PNS", "PNE", "PNW", "PNC",
+             "PSN", "PSS", "PSE", "PSW", "PSC",
+             "PEN", "PES", "PEE", "PEW", "PEC",
+             "PWN", "PWS", "PWE", "PWW", "PWC"
+    ),
+    Richness = c(
+      nrow(filter(presence_carabids, Plot == 'JHW', Trap == 'N')),
+      nrow(filter(presence_carabids, Plot == 'JHW', Trap == 'S')),
+      nrow(filter(presence_carabids, Plot == 'JHW', Trap == 'E')),
+      nrow(filter(presence_carabids, Plot == 'JHW', Trap == 'W')),
+      nrow(filter(presence_carabids, Plot == 'JHW', Trap == 'C')),
+      
+      nrow(filter(presence_carabids, Plot == 'JHM', Trap == 'N')),
+      nrow(filter(presence_carabids, Plot == 'JHM', Trap == 'S')),
+      nrow(filter(presence_carabids, Plot == 'JHM', Trap == 'E')),
+      nrow(filter(presence_carabids, Plot == 'JHM', Trap == 'W')),
+      nrow(filter(presence_carabids, Plot == 'JHM', Trap == 'C')),
+      
+      nrow(filter(presence_carabids, Plot == 'JHO', Trap == 'N')),
+      nrow(filter(presence_carabids, Plot == 'JHO', Trap == 'S')),
+      nrow(filter(presence_carabids, Plot == 'JHO', Trap == 'E')),
+      nrow(filter(presence_carabids, Plot == 'JHO', Trap == 'W')),
+      nrow(filter(presence_carabids, Plot == 'JHO', Trap == 'C')),
+      
+      nrow(filter(presence_carabids, Plot == 'JHG', Trap == 'N')),
+      nrow(filter(presence_carabids, Plot == 'JHG', Trap == 'S')),
+      nrow(filter(presence_carabids, Plot == 'JHG', Trap == 'E')),
+      nrow(filter(presence_carabids, Plot == 'JHG', Trap == 'W')),
+      nrow(filter(presence_carabids, Plot == 'JHG', Trap == 'C')),
+      
+      nrow(filter(presence_carabids, Plot == 'JHH', Trap == 'N')),
+      nrow(filter(presence_carabids, Plot == 'JHH', Trap == 'S')),
+      nrow(filter(presence_carabids, Plot == 'JHH', Trap == 'E')),
+      nrow(filter(presence_carabids, Plot == 'JHH', Trap == 'W')),
+      nrow(filter(presence_carabids, Plot == 'JHH', Trap == 'C')),
+      
+      nrow(filter(presence_carabids, Plot == 'JHB', Trap == 'N')),
+      nrow(filter(presence_carabids, Plot == 'JHB', Trap == 'S')),
+      nrow(filter(presence_carabids, Plot == 'JHB', Trap == 'E')),
+      nrow(filter(presence_carabids, Plot == 'JHB', Trap == 'W')),
+      nrow(filter(presence_carabids, Plot == 'JHB', Trap == 'C')),
+      
+      nrow(filter(presence_carabids, Plot == 'JPN', Trap == 'N')),
+      nrow(filter(presence_carabids, Plot == 'JPN', Trap == 'S')),
+      nrow(filter(presence_carabids, Plot == 'JPN', Trap == 'E')),
+      nrow(filter(presence_carabids, Plot == 'JPN', Trap == 'W')),
+      nrow(filter(presence_carabids, Plot == 'JPN', Trap == 'C')),
+      
+      nrow(filter(presence_carabids, Plot == 'JPS', Trap == 'N')),
+      nrow(filter(presence_carabids, Plot == 'JPS', Trap == 'S')),
+      nrow(filter(presence_carabids, Plot == 'JPS', Trap == 'E')),
+      nrow(filter(presence_carabids, Plot == 'JPS', Trap == 'W')),
+      nrow(filter(presence_carabids, Plot == 'JPS', Trap == 'C')),
+      
+      nrow(filter(presence_carabids, Plot == 'JPE', Trap == 'N')),
+      nrow(filter(presence_carabids, Plot == 'JPE', Trap == 'S')),
+      nrow(filter(presence_carabids, Plot == 'JPE', Trap == 'E')),
+      nrow(filter(presence_carabids, Plot == 'JPE', Trap == 'W')),
+      nrow(filter(presence_carabids, Plot == 'JPE', Trap == 'C')),
+      
+      nrow(filter(presence_carabids, Plot == 'JPW', Trap == 'N')),
+      nrow(filter(presence_carabids, Plot == 'JPW', Trap == 'S')),
+      nrow(filter(presence_carabids, Plot == 'JPW', Trap == 'E')),
+      nrow(filter(presence_carabids, Plot == 'JPW', Trap == 'W')),
+      nrow(filter(presence_carabids, Plot == 'JPW', Trap == 'C'))
+    ))
+}
+
+#Dataset of total species per plot
+Carabid_Species <- carabids %>%
+  distinct(Plot, Species, .keep_all = TRUE) %>%
+  group_by(Plot) %>%
+  summarise(Total_Species = n()) %>% #Gives us a list of each plot and total species within it.
+  slice(6, 4, 5, 2, 3, 1, 10, 11, 9, 12, 7, 8) %>% #Reorder list
+  filter(!Plot == 'JP1', !Plot == 'JP2') %>% #Remove irrelevant plots
+  mutate(Site = c("H", "H", "H", "H", "H", "H", #Add sites for graph colouring.
+                  "P", "P", "P", "P"))
+#view(Carabid_Species)
+
+#CARABID RICHNESS STATISTICAL TESTS AND LINEAR MODEL
+{
+#Linear model for carabid richness between plots. 
+
+#Normality test     
+ggplot(Richness_Table_Carabids, aes(x = Richness)) + 
+  geom_histogram(bins = 10) + 
+  facet_wrap( ~ Plot, nrow = 2) #Most seem roughly normal
+
+Carabid_Richness_Model <- lm(Richness ~ Plot, Richness_Table_Carabids) #Create linear model
+summary(Carabid_Richness_Model) #show model results including anova.
+
+#Linear model for carabid richness between sites.
+
+ggplot(Carabid_Species, aes(x = Total_Species)) + #Normality test
+  geom_histogram(bins = 10) + 
+  facet_wrap( ~ Site, nrow = 2) #I think this is fine
+leveneTest(data = Carabid_Species, Total_Species ~ Site, centre = mean) #Test assumption of equal variance.
+# p = 0.27, meets this assumption.
+
+#Run a linear model on the sites
+Site_Richness_Model <- lm(Richness ~ Site, Richness_Table_Carabids)
+summary(Site_Richness_Model)
+#(P = 0.0004, F = 14.1, df = 1 and 48)
+}
+
+#Add means and stats to Richness_Table_Carabids
+{
+Richness_SE <- Richness_Table_Carabids %>% #Find standard errors for each plot for abundance data
+    group_by(Plot) %>%
+    summarise(standev = sd(Richness)) %>% 
+    slice(6,4,5,2,3,1,8,9,7,10) %>%
+    mutate(standerror = c( #Adding standard errors using generated standevs.
+      (1.6431677/sqrt(5)), #HW
+      (1.6431677/sqrt(5)), #HM
+      (1.4142136/sqrt(5)), #HO
+      (2.2803509/sqrt(5)), #HG
+      (1.3416408/sqrt(5)), #HH
+      (0.5477226/sqrt(5)), #HB
+      (1.3038405/sqrt(5)), #PN
+      (1.1401754/sqrt(5)), #PS
+      (0.8366600/sqrt(5)), #PE
+      (1.1401754/sqrt(5))  #PW
+    ))
+#view(Richness_SE)  
+  
+  Richness_Table_Carabids <- mutate(Richness_Table_Carabids,
+                                    Mean = c((1.6+2.6),(1.6+2.6),(1.6+2.6),(1.6+2.6),(1.6+2.6), #HW
+                                             (1.6+3.6),(1.6+3.6),(1.6+3.6),(1.6+3.6),(1.6+3.6), #HM
+                                             (1.6+2.4),(1.6+2.4),(1.6+2.4),(1.6+2.4),(1.6+2.4), #HO
+                                             (1.6+2.6),(1.6+2.6),(1.6+2.6),(1.6+2.6),(1.6+2.6), #HG
+                                             (1.6+1.0),(1.6+1.0),(1.6+1.0),(1.6+1.0),(1.6+1.0), #HH
+                                             1.6, 1.6, 1.6, 1.6, 1.6,                           #HB
+                                             (1.6+0.2),(1.6+0.2),(1.6+0.2),(1.6+0.2),(1.6+0.2), #PN
+                                             1.6, 1.6, 1.6, 1.6, 1.6,                           #PS #The added number is effectively 0.
+                                             (1.6+0.2),(1.6+0.2),(1.6+0.2),(1.6+0.2),(1.6+0.2), #PE
+                                             (1.6+0.8),(1.6+0.8),(1.6+0.8),(1.6+0.8),(1.6+0.8)  #PW
+                                    )) %>%
+    mutate(Standerror = c(0.7348469, 0.7348469, 0.7348469, 0.7348469, 0.7348469, #HW
+                          0.7348469, 0.7348469, 0.7348469, 0.7348469, 0.7348469, #HM
+                          0.6324555, 0.6324555, 0.6324555, 0.6324555, 0.6324555, #HO
+                          1.0198039, 1.0198039, 1.0198039, 1.0198039, 1.0198039, #HG
+                          0.6000000, 0.6000000, 0.6000000, 0.6000000, 0.6000000, #HH
+                          0.2449490, 0.2449490, 0.2449490, 0.2449490, 0.2449490, #HB
+                          0.5830952, 0.5830952, 0.5830952, 0.5830952, 0.5830952, #PN
+                          0.5099019, 0.5099019, 0.5099019, 0.5099019, 0.5099019, #PS
+                          0.3741657, 0.3741657, 0.3741657, 0.3741657, 0.3741657, #PE
+                          0.5099019, 0.5099019, 0.5099019, 0.5099019, 0.5099019 #PW
+           
+    )) %>%
+    mutate(confint = Standerror*1.96) %>%
+    mutate(upper = Mean + confint) %>%
+    mutate(lower = Mean - confint)
+  #view(Richness_Table_Carabids)
+}
+
+#Create dot plot for richness
+Plot_Richness_Dplot <- ggplot(Richness_Table_Carabids, aes(x = Plot, y = Mean)) + 
+                       theme_bw() +
+                       geom_jitter(data = Richness_Table_Carabids,
+                                  width = 0.1, height = 0,
+                                  aes(x = Plot, y = Richness, color = Site)) +
+                       scale_colour_manual(values = c("H" = "orange", "P" = "deepskyblue")) +
+                       geom_errorbar(data = Richness_Table_Carabids, aes(
+                        x = Plot,
+                        ymin = lower, 
+                        ymax = upper),
+                        width = 0.2) +
+                       labs(x = 'Plot', y = 'Carabid Richness') +
+                       scale_x_discrete(label = c("Brch", "Gras", "Hzl", "Mdw", "Ochd", "Wd",
+                             "PE", "PN", "PS", "PW")) +
+                       geom_point(data = Richness_Table_Carabids,
+                                 aes(x = Plot, y = Mean),
+                                 size = 0.8)
+
+Plot_Richness_Dplot
+
+#Dot plot to compare sites, first find the standerror and confidence intervals by site
+{
+Richness_SE_Sites <- Richness_Table_Carabids %>% #Find standard errors for each plot for abundance data
+    group_by(Site) %>%
+    summarise(standev = sd(Richness), mean_site = mean(Richness)) %>%
+    mutate(standerror = c( #Adding standard errors using generated standevs.
+      (1.865907/sqrt(6)), #H
+      (1.071153/sqrt(4))  #P
+    ))    
+#view(Richness_SE_Sites)  
+
+#Add these values to Abundance_Table
+  Richness_Table_Carabids <- Richness_Table_Carabids %>%
+    mutate(site_mean = c(3.633333, 3.633333, 3.633333, 3.633333, 3.633333, 
+                         3.633333, 3.633333, 3.633333, 3.633333, 3.633333, 
+                         3.633333, 3.633333, 3.633333, 3.633333, 3.633333, 
+                         3.633333, 3.633333, 3.633333, 3.633333, 3.633333, 
+                         3.633333, 3.633333, 3.633333, 3.633333, 3.633333, 
+                         3.633333, 3.633333, 3.633333, 3.633333, 3.633333, 
+                         1.9, 1.9, 1.9, 1.9, 1.9, 
+                         1.9, 1.9, 1.9, 1.9, 1.9, 
+                         1.9, 1.9, 1.9, 1.9, 1.9, 
+                         1.9, 1.9, 1.9, 1.9, 1.9 
+    )) %>%
+    mutate(site_standerror = c(0.7617533, 0.7617533, 0.7617533, 0.7617533, 0.7617533, 
+                               0.7617533, 0.7617533, 0.7617533, 0.7617533, 0.7617533,  
+                               0.7617533, 0.7617533, 0.7617533, 0.7617533, 0.7617533,  
+                               0.7617533, 0.7617533, 0.7617533, 0.7617533, 0.7617533,  
+                               0.7617533, 0.7617533, 0.7617533, 0.7617533, 0.7617533,  
+                               0.7617533, 0.7617533, 0.7617533, 0.7617533, 0.7617533,  
+                               0.5355765, 0.5355765, 0.5355765, 0.5355765, 0.5355765,  
+                               0.5355765, 0.5355765, 0.5355765, 0.5355765, 0.5355765,   
+                               0.5355765, 0.5355765, 0.5355765, 0.5355765, 0.5355765,   
+                               0.5355765, 0.5355765, 0.5355765, 0.5355765, 0.5355765 
+    )) %>%
+    mutate(site_confint = site_standerror*1.96) %>%
+    mutate(site_upper = site_mean + site_confint) %>%
+    mutate(site_lower = site_mean - site_confint)
+}
+
+#Make the dot plot
+Site_Richness_Dplot <- ggplot(Richness_Table_Carabids, aes(x = Site, y = Richness)) + 
+                       theme_bw() +
+                       geom_jitter(data = Richness_Table_Carabids,
+                                  width = 0.1, height = 0,
+                                  aes(x = Site, y = Richness, color = Site)) +
+                       scale_colour_manual(values = c("H" = "orange", "P" = "deepskyblue")) +
+                       geom_errorbar(data = Richness_Table_Carabids, aes(
+                        x = Site,
+                        ymin = site_lower, 
+                        ymax = site_upper),
+                        width = 0.2) +
+                       labs(x = 'Site', y = 'Carabid Richness') +
+                       scale_x_discrete(label = c("Hogacre", "Pembroke")) +
+                       geom_point(data = Richness_Table_Carabids,
+                                aes(x = Site, y = site_mean),
+                                size = 0.8)
+Site_Richness_Dplot
+
+##BETA DIVERSITY - SPECIES TURNOVER
+#Preparing datasets
+{
+#Preparing stripped-down dataset to convert to wide format
+carabids2 <- carabids %>%
+  filter(!Plot == 'JP1', !Plot == 'JP2' )  %>%   #Remove irrelevant data 
+  unite(Species, Genus, Species, sep = " ") %>%  #Combine genus and species in one column, with a space to separate
+  unite(Trap, Plot, Trap, sep = "_") %>% #Combine plot and trap in one column with an underscore to separate
+  select(-Class, -Order, -Family)  #Remove class, order and family columns
+#view(carabids2)
+
+#Convert dataset to wide format, with absences as zeroes.
+carabids2_wide <- spread(carabids2, Species, Abundance, fill = 0) #Create wide format
+
+#Export to easily see what species are found where. Set the directory.
+#write_xlsx(carabids2_wide, 'C:\\directory\\carabids2_wide.xlsx')
+
+carabids2_wide <- column_to_rownames(carabids2_wide, var = "Trap") #Converting traps column to row names, creating a purely numerical dataset
+#view(carabids2_wide)
+
+#Creating 'pitfalls_env' dataset, arranged to corresond with _wide.
+{
+pitfalls_env <- tibble(
+  Site = c("Hogacre", "Hogacre", "Hogacre", "Hogacre", "Hogacre", 
+           "Hogacre", "Hogacre", "Hogacre", "Hogacre", "Hogacre", 
+           "Hogacre", "Hogacre", "Hogacre", "Hogacre", "Hogacre", 
+           "Hogacre", "Hogacre", "Hogacre", "Hogacre", "Hogacre", 
+           "Hogacre", "Hogacre", "Hogacre", "Hogacre", "Hogacre", 
+           "Hogacre", "Hogacre", "Hogacre", "Hogacre", "Hogacre",
+           "Pembroke", "Pembroke", "Pembroke", "Pembroke", "Pembroke",
+           "Pembroke", "Pembroke", "Pembroke", "Pembroke", 
+           "Pembroke", "Pembroke", "Pembroke", "Pembroke", "Pembroke",
+           "Pembroke", "Pembroke", "Pembroke", "Pembroke", "Pembroke"
+  ),
+  Plot = c("HB", "HB", "HB", "HB", "HB",
+           "HG", "HG", "HG", "HG", "HG",
+           "HH", "HH", "HH", "HH", "HH",
+           "HM", "HM", "HM", "HM", "HM",
+           "HO", "HO", "HO", "HO", "HO",
+           "HW", "HW", "HW", "HW", "HW",
+           "PE", "PE", "PE", "PE", "PE",
+           "PN", "PN", "PN", "PN", "PN",
+           "PS", "PS", "PS", "PS",
+           "PW", "PW", "PW", "PW", "PW"
+  ),
+  Trap = c("JHB_C", "JHB_E", "JHB_N", "JHB_S", "JHB_W",
+           "JHG_C", "JHG_E", "JHG_N", "JHG_S", "JHG_W",
+           "JHH_C", "JHH_E", "JHH_N", "JHH_S", "JHH_W",
+           "JHM_C", "JHM_E", "JHM_N", "JHM_S", "JHM_W",
+           "JHO_C", "JHO_E", "JHO_N", "JHO_S", "JHO_W",
+           "JHW_C", "JHW_E", "JHW_N", "JHW_S", "JHW_W",
+           "JPE_C", "JPE_E", "JPE_N", "JPE_S", "JPE_W",
+           "JPN_C", "JPN_E", "JPN_N", "JPN_S", "JPN_W",
+                    "JPS_E", "JPS_N", "JPS_S", "JPS_W",
+           "JPW_C", "JPW_E", "JPW_N", "JPW_S", "JPW_W"
+  ),
+  Habitat = c("Birch", "Birch", "Birch", "Birch", "Birch",
+              "Grassland", "Grassland", "Grassland", "Grassland", "Grassland",
+              "Hazel", "Hazel", "Hazel", "Hazel", "Hazel",
+              "Meadow", "Meadow", "Meadow", "Meadow", "Meadow",
+              "Orchard", "Orchard", "Orchard", "Orchard", "Orchard",
+              "Wood", "Wood", "Wood", "Wood", "Wood",
+              "SportsE", "SportsE", "SportsE", "SportsE", "SportsE",
+              "SportsN", "SportsN", "SportsN", "SportsN", "SportsN",
+              "SportsS", "SportsS", "SportsS", "SportsS",
+              "SportsW", "SportsW", "SportsW", "SportsW", "SportsW"
+              )) %>%
+  column_to_rownames(var = "Trap") #Converting trap names to row names for consistency with _wide
+
+pitfalls_env$Site <- as.factor(pitfalls_env$Site) #Changing variables from characters to factors so they work in the plot
+pitfalls_env$Plot <- as.factor(pitfalls_env$Plot)
+pitfalls_env$Habitat <- as.factor(pitfalls_env$Habitat)
+  
+}
+#view(pitfalls_env)
+
+#Splitting datasets by site
+{
+#splitting carabids2_wide
+  #first add site back in to make it easty to split:
+carabids2_wide_site <- carabids2_wide %>%
+  mutate(Site = c('H', 'H', 'H', 'H', 'H',
+                  'H', 'H', 'H', 'H', 'H',
+                  'H', 'H', 'H', 'H', 'H',
+                  'H', 'H', 'H', 'H', 'H',
+                  'H', 'H', 'H', 'H', 'H',
+                  'H', 'H', 'H', 'H', 'H',
+                  'P', 'P', 'P', 'P', 'P',
+                  'P', 'P', 'P', 'P', 'P',
+                  'P', 'P', 'P', 'P',
+                  'P', 'P', 'P', 'P', 'P'))
+carabids2_wide_site
+
+carabids2_wide_H <- carabids2_wide_site %>% #Creating _wide for Hogacre
+  filter(Site =='H') %>%
+  select(!Site) #Removing site column
+#view(carabids2_wide_H)
+
+carabids2_wide_P <- carabids2_wide_site %>% #Creating _wide for Pembroke
+  filter(Site =='P') %>%
+  select(!Site) #Removing site column
+#view(carabids2_wide_P)
+}
+}
+
+#Nonmetric multidimensional scaling (NMDS)
+
+#NMDS by site
+{
+  Carabids_NMDS <- metaMDS(carabids2_wide) #Run the NMDS
+  Carabids_NMDS
+  #Automatically used a wisconsin(sqrt(data)) transformation, with 'bray' distance.
+  #Stress = 0.1500488 
+  stressplot_site <- stressplot(Carabids_NMDS) #Run the stressplot
+  
+  #Plotting NMDS with different colours for different Reforestation categories #Come back to this
+  scl <- 3
+  colvec_site <- c('orange', 'deepskyblue')
+  #Hogacre orange, Pembroke green
+  
+  #NMDS for sites
+  #The following paragraph of code should be highlighted and run together
+  plot(Carabids_NMDS, type = "n") #Sets up plotting space
+  with(pitfalls_env, points(Carabids_NMDS, 
+                              display = "sites",  #'sites' is part of the way the code works. 'species' is another option.
+                              col = colvec_site[Site], #colours points according to site
+                              scaling = scl,
+                              pch = 21, #style of plotting point - coloured circle
+                              bg = colvec_site[Site])) #Background colour for labels
+  with(pitfalls_env, legend("topleft", legend = levels(Site), bty = "n",
+                              col = colvec_site, pch = 21, pt.bg = colvec_site))
+  
+  #Plot with 95% confidence ellipses. Run the whole paragraph together.
+  attach(pitfalls_env) #Have this dataset ready for subsequent lines
+  plot(Carabids_NMDS, type = "n") #Sets up space, as before
+  ordiellipse(Carabids_NMDS, Site, col=colvec_site, draw="polygon", kind = "se", conf = 0.95) #based on standard error, 95% confidence
+  with(pitfalls_env, points(Carabids_NMDS, display = "sites", col = colvec_site[Site],
+                              scaling = scl, pch = 21, bg = colvec_site[Site]))
+  with(pitfalls_env, legend("topleft", legend = levels(Site), bty = "n",
+                              col = colvec_site, pch = 21, pt.bg = colvec_site))  
+}
+
+#ANOSIM for sites
+anosim_carabids <- anosim(wisconsin(sqrt(carabids2_wide)),
+                          pitfalls_env$Site, 
+                          distance = "bray", 
+                          permutations = 999)
+anosim_carabids
+
+
+#NMDS for Hogacre
+{
+#Creating _env for hogacre
+{
+    pitfalls_env_H <- tibble(
+      Site = c("Hogacre", "Hogacre", "Hogacre", "Hogacre", "Hogacre", 
+               "Hogacre", "Hogacre", "Hogacre", "Hogacre", "Hogacre", 
+               "Hogacre", "Hogacre", "Hogacre", "Hogacre", "Hogacre", 
+               "Hogacre", "Hogacre", "Hogacre", "Hogacre", "Hogacre", 
+               "Hogacre", "Hogacre", "Hogacre", "Hogacre", "Hogacre", 
+               "Hogacre", "Hogacre", "Hogacre", "Hogacre", "Hogacre"
+      ),
+      Plot = c("HB", "HB", "HB", "HB", "HB",
+               "HG", "HG", "HG", "HG", "HG",
+               "HH", "HH", "HH", "HH", "HH",
+               "HM", "HM", "HM", "HM", "HM",
+               "HO", "HO", "HO", "HO", "HO",
+               "HW", "HW", "HW", "HW", "HW"
+      ),
+      Trap = c("JHB_C", "JHB_E", "JHB_N", "JHB_S", "JHB_W",
+               "JHG_C", "JHG_E", "JHG_N", "JHG_S", "JHG_W",
+               "JHH_C", "JHH_E", "JHH_N", "JHH_S", "JHH_W",
+               "JHM_C", "JHM_E", "JHM_N", "JHM_S", "JHM_W",
+               "JHO_C", "JHO_E", "JHO_N", "JHO_S", "JHO_W",
+               "JHW_C", "JHW_E", "JHW_N", "JHW_S", "JHW_W"
+      ),
+      Habitat = c("Birch", "Birch", "Birch", "Birch", "Birch",
+                  "Grassland", "Grassland", "Grassland", "Grassland", "Grassland",
+                  "Hazel", "Hazel", "Hazel", "Hazel", "Hazel",
+                  "Meadow", "Meadow", "Meadow", "Meadow", "Meadow",
+                  "Orchard", "Orchard", "Orchard", "Orchard", "Orchard",
+                  "Wood", "Wood", "Wood", "Wood", "Wood"
+      )) %>%
+      column_to_rownames(var = "Trap") #Converting trap names to row names for consistency with _wide
+    
+    pitfalls_env_H$Site <- as.factor(pitfalls_env_H$Site) #Changing variables from characters to factors so they work in the plot
+    pitfalls_env_H$Plot <- as.factor(pitfalls_env_H$Plot)
+    pitfalls_env_H$Habitat <- as.factor(pitfalls_env_H$Habitat)
+    
+}
+
+Carabids_NMDS_H <- metaMDS(carabids2_wide_H) #Run the NMDS
+Carabids_NMDS_H
+#Automatically used a wisconsin(sqrt(data)) transformation, with 'bray' distance.
+stressplot_H <- stressplot(Carabids_NMDS_H) #Run the stressplot
+{
+#Plotting NMDS with different colours for different Reforestation categories #Come back to this
+scl <- 3
+colvecH <- c("darkorchid4","green4","orange","yellow2","magenta","turquoise")
+#darkorchid4 birch, green4 grassland, orange hazel, yellow2 meadow, magenta orchard, turquoise woodland
+
+#NMDS for Hogacre
+#The following paragraph of code should be highlighted and run together
+plot(Carabids_NMDS_H, type = "n", #Sets up plotting space
+     ylim = c(-1.5,1.5), #Adjusts the size of the space
+     xlim = c(-2.5,1.5)) 
+with(pitfalls_env_H, points(Carabids_NMDS_H, 
+                          display = "sites",  #'sites' is part of the way the code works. 'Species' is another option.
+                          col = colvecH[Habitat], #colours points according to habitat
+                          scaling = scl,
+                          pch = 21, #style of plotting point - coloured circle
+                          bg = colvecH[Habitat])) #Background colour for labels
+with(pitfalls_env_H, legend("topleft", legend = levels(Habitat), bty = "n",
+                          col = colvecH, pch = 21, pt.bg = colvecH))
+
+#Plot with 95% confidence ellipses. Run the whole paragraph together.
+attach(pitfalls_env_H) #Have this dataset ready for subsequent lines
+plot(Carabids_NMDS_H, type = "n", #Sets up plotting space
+     ylim = c(-1.5,1.5), #Adjusts the size of the space. This must be the same as the above paragraph
+     xlim = c(-2.5,1.5)) 
+ordiellipse(Carabids_NMDS_H, Habitat, col=colvecH, draw="polygon", kind = "se", conf = 0.95) #based on standard error, 95% confidence
+with(pitfalls_env_H, points(Carabids_NMDS_H, display = "sites", col = colvecH[Habitat],
+                          scaling = scl, pch = 21, bg = colvecH[Habitat]))
+with(pitfalls_env_H, legend("topleft", legend = levels(Habitat), bty = "n",
+                          col = colvecH, pch = 21, pt.bg = colvecH))
+}
+}
+
+#ANOSIM for Hogacre
+anosim_carabids_H <- anosim(wisconsin(sqrt(carabids2_wide_H)),
+                          pitfalls_env_H$Habitat, 
+                          distance = "bray", 
+                          permutations = 999)
+anosim_carabids_H
+
+#NMDS for Pembroke
+{
+
+#Creating _env for Pembroke
+{
+  pitfalls_env_P <- tibble(
+    Site = c("Pembroke", "Pembroke", "Pembroke", "Pembroke", "Pembroke",
+             "Pembroke", "Pembroke", "Pembroke", "Pembroke", "Pembroke",
+             "Pembroke", "Pembroke", "Pembroke", "Pembroke", 
+             "Pembroke", "Pembroke", "Pembroke", "Pembroke", "Pembroke"
+    ),
+    Plot = c("PE", "PE", "PE", "PE", "PE",
+             "PN", "PN", "PN", "PN", "PN",
+             "PS", "PS", "PS", "PS",
+             "PW", "PW", "PW", "PW", "PW"
+    ),
+    Trap = c("JPE_C", "JPE_E", "JPE_N", "JPE_S", "JPE_W",
+             "JPN_C", "JPN_E", "JPN_N", "JPN_S", "JPN_W",
+             "JPS_E", "JPS_N", "JPS_S", "JPS_W",
+             "JPW_C", "JPW_E", "JPW_N", "JPW_S", "JPW_W"
+    ),
+    Habitat = c("East", "East", "East", "East", "East",
+                "North", "North", "North", "North", "North",
+                "South", "South", "South", "South",
+                "West", "West", "West", "West", "West"
+    )) %>%
+    column_to_rownames(var = "Trap") #Converting trap names to row names for consistency with _wide
+
+  pitfalls_env_P$Site <- as.factor(pitfalls_env_P$Site) #Changing variables from characters to factors so they work in the plot
+  pitfalls_env_P$Plot <- as.factor(pitfalls_env_P$Plot)
+  pitfalls_env_P$Habitat <- as.factor(pitfalls_env_P$Habitat)
+  
+}
+
+Carabids_NMDS_P <- metaMDS(carabids2_wide_P) #Run the NMDS
+Carabids_NMDS_P  #Data is untransformed
+stressplot_P <- stressplot(Carabids_NMDS_P) #Run the stressplot
+
+#Plotting NMDS with different colours for different Reforestation categories #Come back to this
+scl <- 3
+colvecP <- c('hotpink', 'burlywood', 'purple', 'cyan')
+#Pink east, burlywood north, purple south, cyan west
+
+#NMDS for Pembroke
+#The following paragraph of code should be highlighted and run together
+plot(Carabids_NMDS_P, type = "n", #Sets up plotting space
+     ylim = c(-2,1.5), #Adjusts the size of the space
+     xlim = c(-2,2)) 
+  with(pitfalls_env_P, points(Carabids_NMDS_P, 
+                              display = "sites",  #'sites' is part of the way the code works. 'Species' is another option.
+                              col = colvecP[Habitat], #colours points according to habitat
+                              scaling = scl,
+                              pch = 21, #style of plotting point - coloured circle
+                              bg = colvecP[Habitat])) #Background colour for labels
+  with(pitfalls_env_P, legend("topleft", legend = levels(Habitat), bty = "n",
+                              col = colvecP, pch = 21, pt.bg = colvecP))
+
+#Plot with 95% confidence ellipses. Run the whole paragraph together.
+attach(pitfalls_env_P) #Have this dataset ready for subsequent lines
+plot(Carabids_NMDS_P, type = "n", #Sets up space, as before
+     ylim = c(-2,1.5), #Adjusts the size of the space. Must be the same as the above paragraph
+     xlim = c(-2,2)) 
+ordiellipse(Carabids_NMDS_P, Habitat, col=colvecP, draw="polygon", kind = "se", conf = 0.95) #based on standard error, 95% confidence
+with(pitfalls_env_P, points(Carabids_NMDS_P, display = "sites", col = colvecP[Habitat],
+                            scaling = scl, pch = 21, bg = colvecP[Habitat]))
+with(pitfalls_env_P, legend("topleft", legend = levels(Habitat), bty = "n",
+                            col = colvecP, pch = 21, pt.bg = colvecP))
+}
+
+#ANOSIM for Pembroke
+anosim_carabids_P <- anosim(carabids2_wide_P,
+                          pitfalls_env_P$Habitat, 
+                          distance = "bray", 
+                          permutations = 999)
+anosim_carabids_P
+
+#SOIL ANALYSIS
+
+#Load datasets
+{
+soilcarb <- read_csv('soilcarb.csv') 
+soilcarb
+soilmass <- read_csv('soilmass.csv')   
+soilmass
+}
+
+#Creating new dataset to use for analysis
+{
+soil <- select(soilmass, Site, Plot, Trap, `Hole Depth (cm)`, `<2mm mass (g)`) %>%
+  mutate(
+    select(soilcarb, `Carbon %`)) %>% #Adding carbon% column
+  rename('hole_depth_cm' = 'Hole Depth (cm)',
+         'mass_g' = '<2mm mass (g)',
+         'carbon_%' = 'Carbon %') %>% #Renaming columns to be easier to work with
+  filter(!is.na(`carbon_%`)) #Remove NA data
+
+#view(soil)
+
+#Hole volume = soil volume = 4.5^2 * pi * hole depth
+soil <- mutate(soil, soil_volume_cm3 = 
+                 hole_depth_cm * pi * 4.5^2)
+
+#Bulk density = mass/hole volume, then *1,000 to get tonnes per hectare (hectare = 1,000m^3)
+
+soil <- mutate(soil, bulk_dens_tonnes_hect =
+                 (mass_g / soil_volume_cm3)*1000)
+
+#tonnes carbon per hectare (%_carbon/100 * bulk density)
+
+soil <- mutate(soil, tonnes_carbon_per_hect =
+                 `carbon_%` / 100 * bulk_dens_tonnes_hect)
+#view(soil)
+}
+
+#SOIL STATS
+{
+#Plot level
+ggplot(soil, aes(x = tonnes_carbon_per_hect)) + #Normality test at plot level
+  geom_histogram(bins = 10) + 
+  facet_wrap( ~ Plot, nrow = 2) #Looks good
+leveneTest(data = soil, tonnes_carbon_per_hect ~ Plot, centre = mean) #Test assumption of equal variance
+#p = 0.5, so data meets assumption.
+
+soil_model <- lm(data = soil, tonnes_carbon_per_hect ~ Plot) #Create linear model
+summary(soil_model)
+#p = 5.852e-06, F = 7.028 on 9 and 39 df
+
+#Site level
+ggplot(soil, aes(x = tonnes_carbon_per_hect)) +  #Normality test at site level
+  geom_histogram(bins = 10) + 
+  facet_wrap( ~ Site, nrow = 2) #Both sites seem approximately normal
+leveneTest(data = soil, tonnes_carbon_per_hect ~ Site, centre = mean) #Test assumption of equal variance
+#p = 0.256, so data meets assumption
+
+#Run a linear model on the sites
+Site_Soil_Model <- lm(tonnes_carbon_per_hect ~ Site, soil)
+summary(Site_Soil_Model)
+#p = 0.01546, F = 6.315 on 1 and 47 DF
+}
+
+#Creating confidence intervals  
+{
+ soil_SE <- soil %>% #Find standard errors for each plot for abundance data
+   group_by(Plot) %>%
+   summarise(standev = sd(tonnes_carbon_per_hect))
+ #view(soil_SE)
+ soil_SE <- slice(soil_SE, 5,3,6,4,1,2,8,9,7,10) 
+ soil_SE <- mutate(soil_SE, standerror = c(
+     (1.324197/sqrt(5)), #HO
+     (1.001318/sqrt(5)), #HH
+     (2.018653/sqrt(5)), #HW
+     (2.035170/sqrt(5)), #HM
+     (1.802771/sqrt(5)), #HB
+     (2.130955/sqrt(5)), #HG
+     (3.569201/sqrt(5)), #PN
+     (1.405631/sqrt(5)), #PS
+     (1.087560/sqrt(5)), #PE
+     (1.017588/sqrt(4))  #PW
+   ))
+ #view(soil_SE)
+ 
+ soil <- mutate(soil,
+                 Mean = c(
+                   (7.9112+1.1752), (7.9112+1.1752), (7.9112+1.1752), (7.9112+1.1752), (7.9112+1.1752), #HO
+                   (7.9112+2.3056), (7.9112+2.3056), (7.9112+2.3056), (7.9112+2.3056), (7.9112+2.3056), #HH
+                   (7.9112+3.3471), (7.9112+3.3471), (7.9112+3.3471), (7.9112+3.3471), (7.9112+3.3471), #HW
+                   (7.9112+1.6353), (7.9112+1.6353), (7.9112+1.6353), (7.9112+1.6353), (7.9112+1.6353), #HM
+                   7.9112, 7.9112, 7.9112, 7.9112, 7.9112,                                              #HB 
+                   (7.9112+2.7382), (7.9112+2.7382), (7.9112+2.7382), (7.9112+2.7382), (7.9112+2.7382), #HG
+                   (7.9112+8.4507), (7.9112+8.4507), (7.9112+8.4507), (7.9112+8.4507), (7.9112+8.4507), #PN
+                   (7.9112+1.8021), (7.9112+1.8021), (7.9112+1.8021), (7.9112+1.8021), (7.9112+1.8021), #PS
+                   (7.9112+2.8792), (7.9112+2.8792), (7.9112+2.8792), (7.9112+2.8792), (7.9112+2.8792), #PE
+                   (7.9112+1.6932), (7.9112+1.6932), (7.9112+1.6932), (7.9112+1.6932)                   #PW
+                 )) %>%
+    mutate(Standerror = c(0.5921989, 0.5921989, 0.5921989, 0.5921989, 0.5921989,  #HO
+                          0.4478030, 0.4478030, 0.4478030, 0.4478030, 0.4478030,  #HH
+                          0.9027691, 0.9027691, 0.9027691, 0.9027691, 0.9027691,  #HW
+                          0.9101557, 0.9101557, 0.9101557, 0.9101557, 0.9101557,  #HM
+                          0.8062237, 0.8062237, 0.8062237, 0.8062237, 0.8062237,  #HB
+                          0.9529920, 0.9529920, 0.9529920, 0.9529920, 0.9529920,  #HG
+                          1.5961952, 1.5961952, 1.5961952, 1.5961952, 1.5961952,  #PN
+                          0.6286173, 0.6286173, 0.6286173, 0.6286173, 0.6286173,  #PS
+                          0.4863716, 0.4863716, 0.4863716, 0.4863716, 0.4863716,  #PE
+                          0.5087940, 0.5087940, 0.5087940, 0.5087940              #PW
+                          
+    )) %>%
+    mutate(confint = Standerror*1.96) %>%
+    mutate(upper = Mean + confint) %>%
+    mutate(lower = Mean - confint)
+  
+  #view(soil)
+}
+
+#Plot level dot plot for soil
+Plot_Soil_Dplot <- ggplot(soil, aes(x = Plot, y = tonnes_carbon_per_hect)) + 
+  theme_bw() +
+  geom_jitter(data = soil,
+              width = 0.1, height = 0,
+              aes(x = Plot, y = tonnes_carbon_per_hect, color = Site)) +
+  scale_colour_manual(values = c("H" = "orange", "P" = "deepskyblue")) +
+  geom_errorbar(data = soil, aes(
+    x = Plot,
+    ymin = lower, 
+    ymax = upper),
+    width = 0.2) +
+  labs(x = 'Plot', y = 'Carbon per hectare (tonnes)') +
+  scale_x_discrete(label = c("Brch", "Gras", "Hzl", "Mdw", "Ochd", "Wd",
+                             "PE", "PN", "PS", "PW")) +
+  geom_point(data = soil,
+             aes(x = Plot, y = Mean),
+             size = 0.8)
+Plot_Soil_Dplot
+
+#SITE LEVEL ANALYSIS
+{
+  Soil_SE_Sites <- soil %>% #Find standard errors for each plot for abundance data
+    group_by(Site) %>%
+    summarise(standev = sd(tonnes_carbon_per_hect), mean_site = mean(tonnes_carbon_per_hect)) 
+#view(Soil_SE_Sites) 
+  Soil_SE_Sites <- mutate(Soil_SE_Sites, standerror = c( #Adding standard errors using generated standevs.
+      (1.955152/sqrt(6)), #H
+      (3.470446/sqrt(4))  #P
+    ))    
+#view(Soil_SE_Sites)   
+  
+  #Add these values to soil dataset
+  soil <- soil %>%
+    mutate(site_mean = c(9.778103, 9.778103, 9.778103, 9.778103, 9.778103, 
+                         9.778103, 9.778103, 9.778103, 9.778103, 9.778103, 
+                         9.778103, 9.778103, 9.778103, 9.778103, 9.778103, 
+                         9.778103, 9.778103, 9.778103, 9.778103, 9.778103, 
+                         9.778103, 9.778103, 9.778103, 9.778103, 9.778103, 
+                         9.778103, 9.778103, 9.778103, 9.778103, 9.778103, 
+                         11.1723455, 11.1723455, 11.1723455, 11.1723455, 11.1723455,  
+                         11.1723455, 11.1723455, 11.1723455, 11.1723455, 11.1723455,  
+                         11.1723455, 11.1723455, 11.1723455, 11.1723455, 11.1723455,  
+                         11.1723455, 11.1723455, 11.1723455, 11.1723455
+    )) %>%
+    mutate(site_standerror = c(0.7981875, 0.7981875, 0.7981875, 0.7981875, 0.7981875, 
+                               0.7981875, 0.7981875, 0.7981875, 0.7981875, 0.7981875, 
+                               0.7981875, 0.7981875, 0.7981875, 0.7981875, 0.7981875, 
+                               0.7981875, 0.7981875, 0.7981875, 0.7981875, 0.7981875, 
+                               0.7981875, 0.7981875, 0.7981875, 0.7981875, 0.7981875, 
+                               0.7981875, 0.7981875, 0.7981875, 0.7981875, 0.7981875, 
+                               1.7352230, 1.7352230, 1.7352230, 1.7352230, 1.7352230, 
+                               1.7352230, 1.7352230, 1.7352230, 1.7352230, 1.7352230, 
+                               1.7352230, 1.7352230, 1.7352230, 1.7352230, 1.7352230, 
+                               1.7352230, 1.7352230, 1.7352230, 1.7352230 
+    )) %>%
+    mutate(site_confint = site_standerror*1.96) %>%
+    mutate(site_upper = site_mean + site_confint) %>%
+    mutate(site_lower = site_mean - site_confint)
+  #view(soil)
+}
+
+#Site level dot plot for soil
+Site_Soil_Dplot <- ggplot(soil, aes(x = Site, y = tonnes_carbon_per_hect)) + 
+  theme_bw() +
+  geom_jitter(data = soil,
+              width = 0.1, height = 0,
+              aes(x = Site, y = tonnes_carbon_per_hect, color = Site)) +
+  scale_colour_manual(values = c("H" = "orange", "P" = "deepskyblue")) +
+  geom_errorbar(data = soil, aes(
+    x = Site,
+    ymin = site_lower, 
+    ymax = site_upper),
+    width = 0.2) +
+  labs(x = 'Site', y = 'Carbon per hectare (tonnes)') +
+  scale_x_discrete(label = c("Hogacre", "Pembroke")) +
+  geom_point(data = soil,
+             aes(x = Site, y = site_mean),
+             size = 0.8)
+Site_Soil_Dplot
