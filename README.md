@@ -4,7 +4,7 @@ This repository is for the purposes of making my code and data available to all 
 The code itself, made in R version 4.3.2, is in the 'src' folder. It utilises packages 'car' (version 3.1-2), 'tidyverse' (version 2.0.0), 'vegan' (version 2.6-4), 'writexl' (version 1.5.0)
 
 NOTES ON STUDY -----------------
-This code and data is associated with my Mbiol project with the University of Oxford in the academic year of 2023-24. For more information the context, goals, methods and results of this study, see my dissertation 'Difference in invertebrate biodiversity and soil carbon between small-scale habitats in Hogacre Common Ecopark, Oxford'.
+This code and data is associated with my Mbiol project with the University of Oxford in the academic year of 2023-24. For more information the context, goals, methods and results of this study, see my dissertation 'Difference in invertebrate biodiversity and soil carbon between small-scale habitats in Hogacre Common Ecopark, Oxford'. If you are reading this, you should have access to this dissertation.
 
 NOTES ON DATA ------------------
 In 'pitfalls.csv', 'Block' refers to the habitat section (otherwise referred to as 'plot') of the trap, while 'plot' refers to the specific trap i.e. Hogacre Woodland North (JHWN).
