@@ -1,0 +1,78 @@
+Trap	Amara aenea	Amara communis	Amara convexior	Amara lunicollis	Amara montivaga	Asaphidion stierlini	Calathus melanocephalus	Carabus nemoralis	Carabus problematicus	Carabus violaceus	Harpalus affinis	Harpalus rufipes	Nebria brevicollis	Notiophilus biguttatus	Ophonus rufibarbis	Ophonus rupicola	Ophonus schaubergerianus	Poecilus cupreus	Pterostichus madidus	Pterostichus melanarius	Pterostichus niger	Pterostichus vernalis	Stomis pumicatus
+JHB_C	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	0	37	0	0	0	0
+JHB_E	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	70	0	1	0	0
+JHB_N	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	22	0	0	0	0
+JHB_S	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	8	0	0	0	1
+JHB_W	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	34	0	0	0	0
+JHG_C	0	0	7	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0
+JHG_E	0	0	15	2	0	0	0	0	0	0	0	1	0	0	0	0	0	0	2	0	0	0	0
+JHG_N	0	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1
+JHG_S	0	0	22	1	3	0	0	0	0	1	1	0	0	0	0	0	0	0	1	0	0	0	0
+JHG_W	0	3	15	0	1	0	0	0	0	0	0	0	0	0	0	3	0	1	1	0	0	1	0
+JHH_C	0	1	0	0	0	0	0	2	0	0	0	0	0	0	0	0	1	0	28	0	0	0	0
+JHH_E	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	0	0	0	1
+JHH_N	0	0	0	0	0	0	0	2	0	0	0	0	0	0	0	0	3	0	18	0	1	0	0
+JHH_S	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	15	0	0	0	0
+JHH_W	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	0	36	0	0	0	0
+JHM_C	0	0	10	1	7	0	0	0	0	2	0	0	0	0	0	0	0	0	7	1	0	0	0
+JHM_E	0	0	12	0	15	0	0	0	0	0	0	0	0	0	0	0	0	0	6	1	0	0	0
+JHM_N	0	0	16	5	5	0	0	0	0	2	0	2	0	0	0	0	0	0	2	0	0	0	0
+JHM_S	0	0	13	1	2	0	0	0	0	1	1	0	0	0	1	0	0	0	4	0	0	0	0
+JHM_W	0	0	5	0	2	0	0	0	0	0	0	0	0	0	0	0	0	0	6	0	0	0	0
+JHO_C	0	0	2	2	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+JHO_E	0	0	12	3	1	0	0	0	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0
+JHO_N	0	0	6	0	26	0	0	0	0	0	3	0	0	0	0	0	0	0	2	0	0	0	0
+JHO_S	0	0	3	2	1	0	0	0	0	0	0	1	0	0	0	1	0	0	2	0	0	0	0
+JHO_W	0	0	1	0	4	0	0	0	0	3	0	0	0	0	0	0	0	0	7	0	0	0	0
+JHW_C	0	1	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	8	0	0	0	0
+JHW_E	0	1	4	0	1	0	0	0	0	0	0	0	0	0	0	0	0	0	6	0	0	0	0
+JHW_N	0	1	0	15	0	0	0	0	0	0	0	0	2	0	0	0	0	0	7	0	0	0	0
+JHW_S	0	9	0	0	0	0	0	0	0	0	0	2	0	0	0	0	0	0	14	0	0	0	0
+JHW_W	0	1	7	4	0	0	0	1	1	0	1	0	0	0	0	0	0	0	5	0	0	0	0
+JPE_C	1	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	0	0
+JPE_E	0	0	0	0	0	0	0	0	0	0	2	0	1	0	0	0	0	0	2	0	0	0	0
+JPE_N	0	0	0	0	0	0	0	0	0	0	0	2	0	0	0	0	0	0	1	0	0	0	0
+JPE_S	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	9	0	0	0	0
+JPE_W	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0
+JPN_C	0	0	0	0	0	0	0	0	0	0	0	3	0	0	0	0	0	0	0	0	0	0	0
+JPN_E	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0
+JPN_N	0	0	0	0	0	0	0	0	0	0	0	2	0	0	0	0	0	0	1	0	0	0	0
+JPN_S	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0
+JPN_W	0	0	1	0	0	0	2	0	0	0	0	2	1	0	0	0	0	0	0	0	0	0	0
+JPS_E	0	0	0	0	0	0	0	0	0	0	0	3	0	0	0	0	0	0	0	1	0	0	0
+JPS_N	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	0	0
+JPS_S	0	1	0	0	0	0	0	0	0	0	0	3	0	0	0	0	0	0	0	2	0	0	0
+JPS_W	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	1	0	0	0	0	0
+JPW_C	0	0	0	0	0	0	2	0	1	0	0	2	0	0	0	0	0	0	0	0	0	0	0
+JPW_E	0	0	0	0	0	5	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	0
+JPW_N	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	0	0
+JPW_S	0	0	0	0	0	0	1	0	0	0	0	1	0	0	0	0	0	0	0	0	0	0	0
+JPW_W	0	0	0	0	0	0	1	0	0	0	0	0	0	2	2	0	0	0	1	0	0	0	0
+	PE	HH, HW, PS	HG, HM, HO, HW, PN	HG, HM, HO, HW	HG, HM, HO, HW	PW	PN, PW	HB, HH, HW	HW, PW	HG, HM, HO	HG, HM, HO, HW, PE	HG, HM, HO, HW, PE, PN, PS, PW	HW, PE, PN, PW	PW	HM, PW	HG, HO	HH	HG, PS	HB, HG, HH, HM, HO, HW, PE, PN, PW	HM, PS	HB, HH	HG	HB, HG, HH
+	Pembroke	Mixed	Mixed	Hogacre, 1/2	Hogacre, 1/2	Pembroke	Pembroke	Hogacre, 2/3	Mixed	Hogacre, 1	Mixed	Mixed	Mixed	Pembroke	Mixed	Hogacre, 1	Hogacre, 3	Mixed	Mixed	Mixed	Hogacre, 3	Hogacre, 1	Hogacre, 1/3
+Expected Habitat (Luff 2007)	Abundant, dry grasslands and dunes	Abundant, grasslands and moors	Scarce but widespread in SE England, dry ruderal habitats	Abundant, well-drained semi-open habitat	Scarce, local to S England, open, sandy, chalky, ruderal habitat	Scarce, local to S England, open habitats inc. gardens and chalk pits	Widespread and abundant, grassland, heath, garden and arable	Abundant, gardens and fields, not too wet	Abundant mostly in N and W. Woodland, rough grassland, moors	Widespread abundant, woodland, gardens and moors	Widespread and abundant, open dry, gardens, wasteland, arable	Widespread and abundant, open and dry habitats inc arable	Widespread abundant, most habitats inc woodland, grassland and garden	Ubiquitous and abundant, grassland, moors and dunes	Widespread and abundant, partly vegetated dry habitats	Local to S England, scarce, dry open usually calcerous or coastal	SE England, usually scarce, dry grassland and open scrub or woodland	Abundant, widespread in S England, fields and dry habitats	Ubiquitous, extremely abundant, woodlands, gardens, dry grasslands	Widespread and abundant, gardens, grasslands, agri fields	Widespread and abundant, woodland, moor and damp grassland	Widespread and abundant, damp and shaded lowland esp grasslands	Scarce but widespread, woodland, grassland, disturbed ground
+																							
+	Habitat class	Plots	Desc		Total species	23		Species	Habitats found	Expected habitats (Luff 2007)		Match?	Notes										
+	1	HG, HM, HO	Open habitat, few or no trees		Pembroke exclusive	4		Amara aenea	Sports Ground	Dry grasslands and dunes		Y?	Is sports ground dier than other habitats?										
+	2	HW	Semiwooded with grass and bushes		Mixed sites	10		Amara communis	Sports Ground, 2,3	Grasslands and moors		Y 											
+	3	HB, HH	Closed forest, little ground vegetation		Hogacre exclusive	9		Amara convexior	Sports Ground, 1,2	Dry ruderal habitats		Y?	Is sports ground dier than other habitats?										
+					Hogacre 1	3		Amara lunicollis	1,2	Well-drained semi-open habitat		Y											
+	Trap name explanation				Hogacre 1/2	2		Amara montivaga	1,2	Open, sandy, chalky, ruderal habitat		Y	These habitats are open but not sandy or chalky										
+	JXX	July - month of capture			Hogacre 2/3	1		Asaphidion stierlini	Sports Ground	Open habitats inc. gardens and chalk pits		Y											
+	PX	Pembroke			Hogacre 3	2		Calathus melanocephalus	Sports Ground	Grassland, heath, garden and arable		Y											
+	HX	Hogacre			Hogacre 1/3	1		Carabus nemoralis	2,3	Gardens and fields, not too wet		Y?	Mostly found in hazel which was fairly dry										
+	HB	Birch woodland			Hogacre 1/2/3	0		Carabus prolematicus	Sports Ground, 2	Woodland, rough grassland, moors		Y/N	Hogacre's mixed woodland matches this desc well, not sports ground										
+	HG	Grassland						Carabus violaceus	1,	Woodland, gardens and moors		Y	'Garden' implies a generalist species										
+	HH	Hazel coppice			Habitat exclusive			Harpalus affinis	Sports Ground, 1,2	Open dry, gardens, wasteland, arable		Y	Generalist species										
+	HM	Meadow			Meadow	0		Harpalus rufipes	Sports Ground, 1,2	Open and dry habitats inc arable		Y?	Hogacre's woodland may be 'open'										
+	HO	Orchard			Orchard	0		Nebria brevicollis	Sports Ground, 2	Most habitats, woodland, grassland, garden		Y	Explicitly generalist species										
+	HW	Young mixed woodland			Grassland	1		Notiophilus biguttatus	Sports Ground	Grassland, moors and dunes		Y	Suggests treeless habitats										
+	PE	Pembroke east corner			Young mixed woodland	0		Ophonus rufibarbis	Sports Ground, 1 	Partly vegetated dry habitats		N?	None are 'partly vegetated'										
+	PN	Pembroke north corner			Birch	0		Ophonus rupicola	1,	Dry open usually calcerous or coastal		Y?	Not calcerous or coastal, but desc suggests open habitats										
+	PS	Pembroke south corner			Hazel	1		Ophonus schaubergerianus	3,	Dry grassland and open scrub or woodland		Y?	Unsure what constitutes 'open woodland'										
+	PW	Pembroke west corner						Poecilus cupreus	Sports Ground, 1	Fields and dry habitats		Y											
+	XXX_C	Central trap						Pterosticus madidus	Sports Ground, 1,2,3	Woodlands, gardens, dry grasslands		Y	Omnipresent generalist										
+	XXX_E	East trap						Pterosticus melanarius	Sports Ground, 1	Gardens, grasslands, agri fields		Y											
+	XXX_N	North trap						Pterosticus niger	3,	Woodland, moor and damp grassland		Y?	Only found in woodland, but should not be exclusive to it.										
+	XXX_S	South trap						Pterosticus vernalis	1,	Damp and shaded lowland esp grasslands		N?	Sports ground isn't necessarily shaded, but verges are.										
+	XXX_W	West trap						Stomis pumicatus	1,3	Woodland, grassland, disturbed ground		Y	Woodland and grassland										
